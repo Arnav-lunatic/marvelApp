@@ -21,7 +21,7 @@ export default function Nav() {
     
     return (
         <div className='max-w-[1680px] w-full my-2 px-2 flex justify-between bg-black bg-opacity-20 backdrop-blur-lg rounded-lg z-50'>
-            <img className='w-20' src="src/assets/marvel.png" alt="" />
+            <img className='w-20' src="./src/assets/marvel.png" alt="" />
             <button
                 className='w-20'
                 onClick={() => dispatch(switchTheme())}
