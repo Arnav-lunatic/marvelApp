@@ -1,13 +1,12 @@
 import React, {useEffect} from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { switchTheme } from '../features/themeSlice'
-import marvel from '/src/assets/marvel.png'
 
 import { MdOutlineLightMode, MdOutlineDarkMode } from "react-icons/md";
 
-export default function Nav() {
-    const dispatch = useDispatch()
-    const isLightMode = useSelector((state) => state.theme.lightMode)
+const Nav: React.FC = () =>  {
+    const dispatch = useAppDispatch()
+    const isLightMode = useAppSelector((state) => state.theme.lightMode)
 
     useEffect(() => {
         if (isLightMode) {
@@ -22,7 +21,7 @@ export default function Nav() {
     
     return (
         <div className='max-w-[1680px] w-full my-2 px-2 flex justify-between bg-black bg-opacity-20 backdrop-blur-lg rounded-lg z-50'>
-            <img className='w-20' src={marvel} alt="" />
+            <img className='w-20' src={'/src/assets/marvel.png'} alt="" />
             <button
                 className='w-20'
                 onClick={() => dispatch(switchTheme())}
@@ -32,3 +31,5 @@ export default function Nav() {
         </div>
     )
 }
+
+export default Nav;

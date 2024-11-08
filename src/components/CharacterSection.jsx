@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import SearchBar from "./SearchBar";
 import CharacterCard from "./CharacterCard";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { IoIosArrowDown } from "react-icons/io";
 import { ts, publicApiKey, hash } from "../config/constant";
 import { Spinner } from "@nextui-org/react";
 import { useSelector } from "react-redux";
 
 export default function CharacterSection() {
 	const isLightMode = useSelector((state) => state.theme.lightMode);
-	const [characterData, setCharacterData] = useState("");
+	const [characterData, setCharacterData] = useState();
 	const [characterSearchQuery, setCharacterSearchQuery] = useState("");
 	const [debouncedCharacterSearchQuery, setDebouncedCharacterSearchQuery] =
 		useState("");
@@ -48,7 +48,7 @@ export default function CharacterSection() {
 		params.nameStartsWith = debouncedCharacterSearchQuery;
 
 	useEffect(() => {
-		setCharacterData("")
+		setCharacterData()
 		fetchCharacterData();
 	}, [debouncedCharacterSearchQuery, orderBy]);
 

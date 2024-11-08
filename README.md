@@ -12,6 +12,8 @@ Check out the live app here: [Marvel Comic Search](https://marvelcomicsearch.ver
 - Displays detailed information about characters and comics.
 - Global state management using Redux.
 - Fetches data from the [Marvel API](https://developer.marvel.com/).
+- Styling using **Tailwind CSS** for utility-first, responsive design.  
+- UI components styled with [Next UI](https://nextui.org/).
 
 ## Getting Started
 

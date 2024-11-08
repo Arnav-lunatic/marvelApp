@@ -1,6 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
+interface themeState {
+	lightMode : boolean
+}
+
+const initialState : themeState = {
 	lightMode: false,
 };
 
