@@ -1,6 +1,11 @@
 import { Card, CardFooter, Image, Button } from "@nextui-org/react";
 
-export default function CharacterCard({ characImg, characName }) {
+interface characProps {
+	characImg: string,
+	characName: string,
+}
+
+export default function CharacterCard({ characImg, characName } : characProps) {
 	
 
 	return (

@@ -1,10 +1,14 @@
-
 import { Input } from "@nextui-org/react";
 import { CiSearch } from "react-icons/ci";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "../app/hooks";
 
-export default function SearchBar({searchQuery,setSearchQuery}) {
-	const isLightMode = useSelector((state) => state.theme.lightMode)
+interface query {
+	searchQuery: string,
+	setSearchQuery: React.Dispatch<React.SetStateAction<string>>,
+}
+
+export default function SearchBar({searchQuery,setSearchQuery} : query) {
+	const isLightMode = useAppSelector((state) => state.theme.lightMode)
 
     return (
         <div className={`w-full ${isLightMode ? 'light' : 'dark'}`} >
@@ -13,7 +17,6 @@ export default function SearchBar({searchQuery,setSearchQuery}) {
 				isClearable
 				radius="lg"
 				value={searchQuery}
-				on
                 onChange={(event) => setSearchQuery(event.target.value)}
 				classNames={{
 					label: "text-black/50 dark:text-white/90",

@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { switchTheme } from '../features/themeSlice'
-
+import marvelIcon from '/src/assets/marvel.png'
 import { MdOutlineLightMode, MdOutlineDarkMode } from "react-icons/md";
 
 const Nav: React.FC = () =>  {
@@ -21,7 +21,7 @@ const Nav: React.FC = () =>  {
     
     return (
         <div className='max-w-[1680px] w-full my-2 px-2 flex justify-between bg-black bg-opacity-20 backdrop-blur-lg rounded-lg z-50'>
-            <img className='w-20' src={'/src/assets/marvel.png'} alt="" />
+            <img className='w-20' src={marvelIcon} alt="" />
             <button
                 className='w-20'
                 onClick={() => dispatch(switchTheme())}
