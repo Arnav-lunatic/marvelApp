@@ -10,6 +10,8 @@ Check out the live app here: [Marvel Comic Search](https://marvelcomicsearch.ver
 
 - Search for Marvel comic characters and comics.
 - Displays detailed information about characters and comics.
+- infinity pagination with react query
+- Typescript.
 - Global state management using Redux.
 - Fetches data from the [Marvel API](https://developer.marvel.com/).
 - Styling using **Tailwind CSS** for utility-first, responsive design.  

@@ -5,18 +5,32 @@ import CharacterCard from "./CharacterCard";
 import { IoIosArrowDown } from "react-icons/io";
 import { ts, publicApiKey, hash } from "../config/constant";
 import { Spinner } from "@nextui-org/react";
-import { useAppSelector } from "../app/hooks";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+import { setCharacterId } from "../features/characterDataSlice";
+import { CircularProgress } from "@nextui-org/react";
+
+import {
+	Modal,
+	ModalContent,
+	ModalHeader,
+	ModalBody,
+	ModalFooter,
+	Button,
+	useDisclosure,
+} from "@nextui-org/react";
 
 interface params {
-	ts: number,
-	apikey: string,
-	hash: string,
-	orderBy: string,
-	nameStartsWith?: string,
+	ts: number;
+	apikey: string;
+	hash: string;
+	orderBy: string;
+	nameStartsWith?: string;
 }
 
 const CharacterSection: React.FC = () => {
 	const isLightMode = useAppSelector((state) => state.theme.lightMode);
+	const dispatch = useAppDispatch();
+
 	const [characterData, setCharacterData] = useState<object | void>();
 	const [characterSearchQuery, setCharacterSearchQuery] = useState("");
 	const [debouncedCharacterSearchQuery, setDebouncedCharacterSearchQuery] =
@@ -25,7 +39,7 @@ const CharacterSection: React.FC = () => {
 	const [orderBy, setOrderBy] = useState("name");
 	const [isAscendingOrder, setIsAscendingOrder] = useState(true);
 
-	const params : params = {
+	const params: params = {
 		ts: ts,
 		apikey: publicApiKey,
 		hash: hash,
@@ -71,8 +85,72 @@ const CharacterSection: React.FC = () => {
 		}
 	};
 
+	// =======================++++ Character View More ++++======================== //
+	const [eachCharacterInfo, setEachCharacterInfo] = useState<{
+		name: string;
+		image: string;
+		description: string;
+	}>({ name: "", image: "", description: "" });
+
+	// Functional Component from NextUI
+	// ============================= //
+	const { isOpen, onOpen, onClose } = useDisclosure();
+
+	const handleClick = (name: string, image: string, description: string) => {
+		setEachCharacterInfo({
+			name: name,
+			image: image,
+			description: description,
+		});
+		onOpen();
+	};
+
+	const CharacterViewMore = () => {
+		return (
+			<>
+				<Modal backdrop="blur" isOpen={isOpen} onClose={onClose}>
+					<ModalContent
+						className={` ${
+							isLightMode ? "bg-zinc-300" : "bg-zinc-800"
+						} overflow-auto`}
+					>
+						{(onClose) => (
+							<>
+								<ModalHeader className="flex flex-col gap-1">
+									{eachCharacterInfo.name}
+								</ModalHeader>
+								<img
+									className="mx-6"
+									src={eachCharacterInfo.image}
+									alt="Not Found"
+								/>
+								<ModalBody>
+									{eachCharacterInfo.description}
+								</ModalBody>
+								<ModalFooter>
+									<Button
+										color="danger"
+										variant="light"
+										onPress={onClose}
+									>
+										Close
+									</Button>
+									<Button color="primary" onPress={onClose}>
+										Visit
+									</Button>
+								</ModalFooter>
+							</>
+						)}
+					</ModalContent>
+				</Modal>
+			</>
+		);
+	};
+
 	return (
 		<div className="w-full md:w-96 overflow-auto h-auto md:overflow-y-scroll md:h-full">
+			<CharacterViewMore />
+
 			<SearchBar
 				searchQuery={characterSearchQuery}
 				setSearchQuery={setCharacterSearchQuery}
@@ -136,6 +214,15 @@ const CharacterSection: React.FC = () => {
 									eachCharac.thumbnail.extension
 								}
 								characName={eachCharac.name}
+								handleAction={() =>
+									handleClick(
+										eachCharac.name,
+										eachCharac.thumbnail.path +
+											"." +
+											eachCharac.thumbnail.extension,
+										eachCharac.description
+									)
+								}
 							/>
 						);
 					})}
