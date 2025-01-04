@@ -13,12 +13,14 @@ import {
 } from "react-router-dom";
 import CharacterPage from "./components/CharacterPage";
 import HomePage from "./components/HomePage";
+import ErrorPage from "./components/ErrorPage";
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
 		<Route path="/" element={<App />}>
 			<Route path="" element={<HomePage />}/>
-			<Route path="character" element={<CharacterPage/>}/>
+			<Route path="character/*" element={<CharacterPage />} />
+			<Route path="*" element={<ErrorPage/>} />
 		</Route>
 	)
 );

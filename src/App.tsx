@@ -1,13 +1,21 @@
 import "./App.css";
+import CharacterSection from "./components/CharacterSection";
 import Nav from "./components/Nav";
 import { Outlet } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
 
 	return (
-		<div className="h-auto md:h-[90dvh]">
+		<div className="flex gap-4 flex-col-reverse md:flex-row h-full max-w-[1680px] w-full relative pt-20">
 			<Nav />
-			<Outlet />
+			<div className="flex-grow">
+				<Outlet />
+			</div>
+			<div className="">
+				<CharacterSection />
+			</div>
+			<Analytics/>
 		</div>
 	);
 }

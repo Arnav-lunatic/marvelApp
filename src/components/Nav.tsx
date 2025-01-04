@@ -20,7 +20,7 @@ const Nav: React.FC = () =>  {
     
     
     return (
-        <div className='max-w-[1680px] w-full my-2 px-2 flex justify-between bg-black bg-opacity-20 backdrop-blur-lg rounded-lg z-50'>
+        <div className='absolute top-0 right-0 left-0 w-full my-2 px-2 flex justify-between bg-black bg-opacity-20 backdrop-blur-lg rounded-lg z-50'>
             <img className='w-20' src={marvelIcon} alt="" />
             <button
                 className='w-20'

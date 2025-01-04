@@ -6,8 +6,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { ts, publicApiKey, hash } from "../config/constant";
 import { Spinner } from "@nextui-org/react";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
-import { setCharacterId } from "../features/characterDataSlice";
-import { CircularProgress } from "@nextui-org/react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
 	Modal,
@@ -30,6 +29,7 @@ interface params {
 const CharacterSection: React.FC = () => {
 	const isLightMode = useAppSelector((state) => state.theme.lightMode);
 	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
 
 	const [characterData, setCharacterData] = useState<object | void>();
 	const [characterSearchQuery, setCharacterSearchQuery] = useState("");
@@ -38,6 +38,7 @@ const CharacterSection: React.FC = () => {
 
 	const [orderBy, setOrderBy] = useState("name");
 	const [isAscendingOrder, setIsAscendingOrder] = useState(true);
+
 
 	const params: params = {
 		ts: ts,
@@ -61,7 +62,7 @@ const CharacterSection: React.FC = () => {
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
 			setDebouncedCharacterSearchQuery(characterSearchQuery);
-		}, 500);
+		}, 1000);
 
 		return () => clearTimeout(timeoutId);
 	}, [characterSearchQuery]);
@@ -92,19 +93,27 @@ const CharacterSection: React.FC = () => {
 		description: string;
 	}>({ name: "", image: "", description: "" });
 
-	// Functional Component from NextUI
-	// ============================= //
+    const [characterIdParams, setCharacterParams] = useSearchParams()
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	const [characterId, setCharacterId] = useState<string>(characterIdParams.get('id') || '')
 
-	const handleClick = (name: string, image: string, description: string) => {
+	const handleClick = (name: string, image: string, description: string, characterId:string) => {
 		setEachCharacterInfo({
 			name: name,
 			image: image,
 			description: description,
 		});
+		setCharacterId(characterId)
 		onOpen();
 	};
 
+	const goToCharacterPage = () => {
+		navigate(`/character?id=${characterId}`)
+		setCharacterParams({id: characterId})
+	}
+
+	// Functional Component from NextUI
+	// ============================= //
 	const CharacterViewMore = () => {
 		return (
 			<>
@@ -135,7 +144,7 @@ const CharacterSection: React.FC = () => {
 									>
 										Close
 									</Button>
-									<Button color="primary" onPress={onClose}>
+									<Button color="primary" onPress={goToCharacterPage}>
 										Visit
 									</Button>
 								</ModalFooter>
@@ -148,7 +157,7 @@ const CharacterSection: React.FC = () => {
 	};
 
 	return (
-		<div className="w-full md:w-96 overflow-auto h-auto md:overflow-y-scroll md:h-full">
+		<div className=" w-full md:w-96 overflow-auto h-auto md:overflow-y-scroll md:h-full">
 			<CharacterViewMore />
 
 			<SearchBar
@@ -157,7 +166,7 @@ const CharacterSection: React.FC = () => {
 			/>
 
 			{/* Order By */}
-			<div className="flex  items-center justify-between mt-2 text-sm opacity-60">
+			<div className="flex items-center justify-between mt-2 text-sm opacity-60">
 				<span>Order By-</span>
 				<span
 					className={`rounded-lg px-1 ${
@@ -217,10 +226,9 @@ const CharacterSection: React.FC = () => {
 								handleAction={() =>
 									handleClick(
 										eachCharac.name,
-										eachCharac.thumbnail.path +
-											"." +
-											eachCharac.thumbnail.extension,
-										eachCharac.description
+										`${eachCharac.thumbnail.path}.${eachCharac.thumbnail.extension}`,
+										eachCharac.description,
+										eachCharac.id
 									)
 								}
 							/>
