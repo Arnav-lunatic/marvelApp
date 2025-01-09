@@ -7,7 +7,7 @@ import { Analytics } from "@vercel/analytics/react"
 function App() {
 
 	return (
-		<div className="flex gap-4 flex-col-reverse md:flex-row h-full max-w-[1680px] w-full relative pt-20">
+		<div className="flex gap-4 flex-col md:flex-row h-full max-w-[1680px] w-full relative pt-20">
 			<Nav />
 			<div className="flex-grow">
 				<Outlet />

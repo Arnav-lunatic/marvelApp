@@ -28,7 +28,6 @@ interface params {
 
 const CharacterSection: React.FC = () => {
 	const isLightMode = useAppSelector((state) => state.theme.lightMode);
-	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 
 	const [characterData, setCharacterData] = useState<object | void>();
@@ -36,9 +35,8 @@ const CharacterSection: React.FC = () => {
 	const [debouncedCharacterSearchQuery, setDebouncedCharacterSearchQuery] =
 		useState("");
 
-	const [orderBy, setOrderBy] = useState("name");
+	const [orderBy, setOrderBy] = useState("modified");
 	const [isAscendingOrder, setIsAscendingOrder] = useState(true);
-
 
 	const params: params = {
 		ts: ts,
@@ -56,7 +54,10 @@ const CharacterSection: React.FC = () => {
 				},
 			})
 			.then((response) => setCharacterData(response.data.data.results))
-			.catch((error) => console.error("Error:", error));
+			.catch((error) => {
+				navigate("/error");
+				console.error("Error:", error);
+			});
 	};
 
 	useEffect(() => {
@@ -93,24 +94,31 @@ const CharacterSection: React.FC = () => {
 		description: string;
 	}>({ name: "", image: "", description: "" });
 
-    const [characterIdParams, setCharacterParams] = useSearchParams()
+	const [characterIdParams, setCharacterParams] = useSearchParams();
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const [characterId, setCharacterId] = useState<string>(characterIdParams.get('id') || '')
+	const [characterId, setCharacterId] = useState<string>(
+		characterIdParams.get("id") || ""
+	);
 
-	const handleClick = (name: string, image: string, description: string, characterId:string) => {
+	const handleClick = (
+		name: string,
+		image: string,
+		description: string,
+		characterId: string
+	) => {
 		setEachCharacterInfo({
 			name: name,
 			image: image,
 			description: description,
 		});
-		setCharacterId(characterId)
+		setCharacterId(characterId);
 		onOpen();
 	};
 
 	const goToCharacterPage = () => {
-		navigate(`/character?id=${characterId}`)
-		setCharacterParams({id: characterId})
-	}
+		navigate(`/character?id=${characterId}`);
+		setCharacterParams({ id: characterId });
+	};
 
 	// Functional Component from NextUI
 	// ============================= //
@@ -144,7 +152,13 @@ const CharacterSection: React.FC = () => {
 									>
 										Close
 									</Button>
-									<Button color="primary" onPress={goToCharacterPage}>
+									<Button
+										color="primary"
+										onPress={() => {
+											onClose();
+											goToCharacterPage();
+										}}
+									>
 										Visit
 									</Button>
 								</ModalFooter>
@@ -157,7 +171,7 @@ const CharacterSection: React.FC = () => {
 	};
 
 	return (
-		<div className=" w-full md:w-96 overflow-auto h-auto md:overflow-y-scroll md:h-full">
+		<div className=" w-full md:w-96 overflow-auto h-auto md:overflow-y-scroll md:h-[85dvh] bg-black bg-opacity-20 backdrop-blur-lg rounded-lg z-50 p-4">
 			<CharacterViewMore />
 
 			<SearchBar

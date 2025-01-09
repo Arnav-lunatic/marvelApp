@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ts, publicApiKey, hash } from "../config/constant";
 
-export default function ComicSection() {
+export default function HomePage() {
 
 	const [characterData, setCharacterData] = useState("");
 
