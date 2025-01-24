@@ -35,7 +35,7 @@ const CharacterSection: React.FC = () => {
 	const [debouncedCharacterSearchQuery, setDebouncedCharacterSearchQuery] =
 		useState("");
 
-	const [orderBy, setOrderBy] = useState("modified");
+	const [orderBy, setOrderBy] = useState("name");
 	const [isAscendingOrder, setIsAscendingOrder] = useState(true);
 
 	const params: params = {
@@ -53,7 +53,9 @@ const CharacterSection: React.FC = () => {
 					Accept: "*/*",
 				},
 			})
-			.then((response) => setCharacterData(response.data.data.results))
+			.then((response) => {
+				setCharacterData(response.data.data.results)
+			})
 			.catch((error) => {
 				navigate("/error");
 				console.error("Error:", error);
@@ -171,7 +173,7 @@ const CharacterSection: React.FC = () => {
 	};
 
 	return (
-		<div className=" w-full md:w-96 overflow-auto h-auto md:overflow-y-scroll md:h-[85dvh] bg-black bg-opacity-20 backdrop-blur-lg rounded-lg z-50 p-4">
+		<div className="w-full overflow-auto md:overflow-y-scroll h-full bg-black bg-opacity-20 backdrop-blur-lg rounded-lg z-50 p-4">
 			<CharacterViewMore />
 
 			<SearchBar
@@ -180,7 +182,7 @@ const CharacterSection: React.FC = () => {
 			/>
 
 			{/* Order By */}
-			<div className="flex items-center justify-between mt-2 text-sm opacity-60">
+			<div className="flex items-center justify-between mt-2 text-sm opacity-60 mb-2">
 				<span>Order By-</span>
 				<span
 					className={`rounded-lg px-1 ${
@@ -226,7 +228,7 @@ const CharacterSection: React.FC = () => {
 			</div>
 
 			{characterData ? (
-				<div className="grid gap-4 mt-4 grid-cols-2 m-auto">
+				<div className="grid grid-cols-2 gap-1">
 					{Object.values(characterData).map((eachCharac, index) => {
 						return (
 							<CharacterCard
