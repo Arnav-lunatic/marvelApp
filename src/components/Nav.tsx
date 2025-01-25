@@ -13,7 +13,7 @@ const Nav: React.FC = () =>  {
             document.documentElement.style.setProperty('--bg-color', '#fffafa')
             document.documentElement.style.setProperty('--text-color', 'black')
         } else {
-            document.documentElement.style.setProperty('--bg-color', '#232323')
+            document.documentElement.style.setProperty('--bg-color', '#262626')
             document.documentElement.style.setProperty('--text-color', 'white')
         }
     }, [isLightMode])

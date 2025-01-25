@@ -80,7 +80,7 @@ export default function CharacterPage() {
 
 	return (
 		<div className="w-full overflow-y-auto overflow-x-hidden h-full">
-			{characterData ? (
+			{characterData && (
 				<div className="w-full">
 					<div className="flex gap-10 flex-col md:flex-row items-top ">
 						<Image
@@ -130,8 +130,6 @@ export default function CharacterPage() {
 					)}
 
 				</div>
-			) : (
-				""
 			)}
 		</div>
 	);

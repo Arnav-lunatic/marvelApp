@@ -5,11 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { setIsLoading } from "../features/loadingSlice";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { Card, CardHeader, CardBody, Image, Skeleton } from "@heroui/react";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 interface params {
 	ts: number;
 	apikey: string;
 	hash: string;
+	offset: Number;
 	limit: Number;
 }
 
@@ -35,19 +37,22 @@ export default function EachSection({
 	sectionName: string;
 }) {
 	const navigate = useNavigate();
-	const [sectionData, setSectionData] = useState<section[]>();
 	const dispatch = useAppDispatch();
 	const isLightMode = useAppSelector((state) => state.theme.lightMode);
-	const isLoading = useAppSelector((state) => state.loader.isLoading);
+
+	const [sectionData, setSectionData] = useState<section[]>([]);
+	const [fetchDataLength, setFetchDataLength] = useState(8);
+	const [hasMore, setHasMore] = useState(true);
 
 	const params: params = {
 		ts: ts,
 		apikey: publicApiKey,
 		hash: hash,
-		limit: 12
+		offset: 0,
+		limit: 8,
 	};
 
-	const fetchCharacterData = () => {
+	useEffect(() => {
 		axios
 			.get(
 				`https://gateway.marvel.com/v1/public/characters/${characterId}/${sectionName}`,
@@ -66,70 +71,120 @@ export default function EachSection({
 				console.error("Error:", error);
 			})
 			.finally(() => dispatch(setIsLoading(false)));
+	}, []);
+
+	const nextFetchCharacterData = () => {
+		params.offset = fetchDataLength;
+		axios
+			.get(
+				`https://gateway.marvel.com/v1/public/characters/${characterId}/${sectionName}`,
+				{
+					params,
+					headers: {
+						Accept: "*/*",
+					},
+				}
+			)
+			.then((response) => {
+				setSectionData((prevData) => [
+					...prevData,
+					...response.data.data.results,
+				]);
+				response.data.data.results.length > 0
+					? setHasMore(true)
+					: setHasMore(false);
+			})
+			.catch((error) => {
+				navigate("/error");
+				console.error("Error:", error);
+			});
 	};
 
 	useEffect(() => {
-		setSectionData([]);
-		fetchCharacterData();
-		dispatch(setIsLoading(true));
-	}, [characterId]);
+		nextFetchCharacterData();
+	}, []);
+
+	const numberOfLoaderElement = [1, 2, 3, 4, 5, 6, 7, 8];
+	const Loader = () => {
+		return (
+			<div className="grid items-end grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+				{numberOfLoaderElement.map((elem) => {
+					return (
+						<Card
+							key={elem}
+							className={`w-68 sm:w-full mx-2 p-2 ${
+								isLightMode ? "" : "dark"
+							}`}
+							radius="lg"
+						>
+							<div className="space-y-3">
+								<Skeleton className="w-4/5 rounded-lg">
+									<div className="h-3 w-4/5 rounded-lg bg-default-200" />
+								</Skeleton>
+								<Skeleton className="w-3/5 rounded-lg">
+									<div className="h-3 w-3/5 rounded-lg bg-default-200" />
+								</Skeleton>
+								<Skeleton className="w-2/5 rounded-lg">
+									<div className="h-3 w-2/5 rounded-lg bg-default-300" />
+								</Skeleton>
+							</div>
+							<Skeleton className="rounded-lg mt-2">
+								<div className="h-96 rounded-lg bg-default-300" />
+							</Skeleton>
+						</Card>
+					);
+				})}
+			</div>
+		);
+	};
 
 	return (
-		<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-			{sectionData && !isLoading ? (
-				sectionData.map((comic, index) => {
-					return (
-						<div key={index}>
-							<Card
-								className={`w-68 sm:w-full mx-2 ${
-									isLightMode ? "" : "dark"
-								}`}
-							>
-								<CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-									<h4 className="font-bold text-large">
-										{comic.title}
-									</h4>
-									<p className="text-tiny uppercase font-bold">
-										{comic.modified}
-									</p>
+		<InfiniteScroll
+			dataLength={sectionData.length}
+			next={() => {
+				setFetchDataLength((fetchDataLength) => fetchDataLength + 8);
+			}}
+			hasMore={hasMore}
+			loader={<Loader />}
+		>
+			<div className="grid items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+				{sectionData &&
+					sectionData.map((comic, index) => {
+						return (
+							<div key={index}>
+								<Card
+									className={`w-68 sm:w-full mx-2 ${
+										isLightMode ? "" : "dark"
+									}`}
+								>
+									<CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+										<h4 className="font-bold text-large">
+											{comic.title}
+										</h4>
+										<p className="text-tiny uppercase font-bold">
+											{comic.modified}
+										</p>
 
-									{comic.prices && (
-										<small className="text-default-500">
-											price: ${comic.prices[0]?.price}
-										</small>
-									)}
-								</CardHeader>
-								<CardBody className="overflow-visible py-2">
-									<Image
-										alt="Card background"
-										className="object-cover rounded-xl"
-										src={`${comic.thumbnail?.path}.${comic.thumbnail?.extension}`}
-										height={420}
-										width={270}
-									/>
-								</CardBody>
-							</Card>
-						</div>
-					);
-				})
-			) : (
-				<Card className="w-[300px] space-y-5 p-4 dark" radius="lg">
-					<div className="space-y-3">
-						<Skeleton className="w-3/5 rounded-lg">
-							<div className="h-3 w-3/5 rounded-lg bg-default-200" />
-						</Skeleton>
-						<Skeleton className="w-4/5 rounded-lg">
-							<div className="h-3 w-4/5 rounded-lg bg-default-200" />
-						</Skeleton>
-						<Skeleton className="w-2/5 rounded-lg">
-							<div className="h-3 w-2/5 rounded-lg bg-default-300" />
-						</Skeleton>
-					</div>
-					<Skeleton className="rounded-lg">
-						<div className="h-96 rounded-lg bg-default-300" />
-					</Skeleton>
-				</Card>
-			)}
-		</div>
+										{comic.prices && (
+											<small className="text-default-500">
+												price: ${comic.prices[0]?.price}
+											</small>
+										)}
+									</CardHeader>
+									<CardBody className="overflow-visible py-2">
+										<Image
+											alt="Card background"
+											className="object-cover rounded-xl"
+											src={`${comic.thumbnail?.path}.${comic.thumbnail?.extension}`}
+											height={420}
+											width={270}
+										/>
+									</CardBody>
+								</Card>
+							</div>
+						);
+					})}
+			</div>
+		</InfiniteScroll>
 	);
 }
