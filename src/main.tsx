@@ -1,7 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { NextUIProvider } from "@nextui-org/react";
-import {HeroUIProvider} from '@heroui/react'
 import "./index.css";
 import App from "./App";
 import { store } from "./app/store";
@@ -31,11 +30,11 @@ const rootElement = document.getElementById("root");
 if (rootElement) {
 	createRoot(rootElement).render(
 		<StrictMode>
-			<HeroUIProvider>
+			<NextUIProvider>
 				<Provider store={store}>
 					<RouterProvider router={router} />
 				</Provider>
-			</HeroUIProvider>
+			</NextUIProvider>
 		</StrictMode>
 	);
 }

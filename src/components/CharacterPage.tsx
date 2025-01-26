@@ -3,10 +3,7 @@ import axios from "axios";
 import { ts, publicApiKey, hash } from "../config/constant";
 import { useEffect, useState } from "react";
 import { Image } from "@nextui-org/react";
-import EachSection from "./EachSection";
-import { setIsLoading } from "../features/loadingSlice";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
-import OptionsBar from "./OptionsBar";
+import ComicSection from "./ComicSection";
 
 interface params {
 	ts: number;
@@ -25,32 +22,14 @@ interface ApiData {
 
 export default function CharacterPage() {
 	const [characterIdParams] = useSearchParams();
-	const [characterData, setCharacterData] = useState<ApiData>();
+	const [characterData, setCharacterData] = useState<ApiData[]>();
 	const navigate = useNavigate();
-	const dispatch = useAppDispatch();
-
-	const isComicOptionSelected = useAppSelector(
-		(state) => state.options.isComicsSelected
-	);
-	const isEventOptionSelected = useAppSelector(
-		(state) => state.options.isEventsSelected
-	);
-	const isSeriesOptionSelected = useAppSelector(
-		(state) => state.options.isSeriesSelected
-	);
-	const isStoriesOptionSelected = useAppSelector(
-		(state) => state.options.isStoriesSelected
-	);
 
 	const params: params = {
 		ts: ts,
 		apikey: publicApiKey,
 		hash: hash,
 	};
-
-	useEffect(() => {
-		dispatch(setIsLoading(true));
-	}, []);
 
 	const fetchCharacterData = () => {
 		let cancel;
@@ -67,72 +46,53 @@ export default function CharacterPage() {
 					cancelToken: new axios.CancelToken(c => cancel = c)
 				}
 			)
-			.then((response) => {
-				setCharacterData(response.data.data.results[0]);
-			})
+			.then((response) => setCharacterData(response.data.data.results))
 			.catch((error) => {
 				navigate("/error");
 				console.error("Error:", error);
-			})
-			.finally(() => dispatch(setIsLoading(false)));
+			});
 	};
+
 	useEffect(() => {
 		fetchCharacterData();
 	}, [characterIdParams.get("id")]);
 
 	return (
+<<<<<<< HEAD
 		<div className="w-full overflow-y-auto overflow-x-hidden h-full">
 			{characterData && (
 				<div className="w-full">
 					<div className="flex gap-10 flex-col md:flex-row items-top ">
+=======
+		<div className="w-full">
+			{characterData ? (
+				<div>
+					<div className="flex gap-10 flex-col md:flex-row items-top">
+>>>>>>> parent of 408ad2d (create section for character's comics, events, series, stories)
 						<Image
 							isBlurred
 							isZoomed
-							className="p-2 max-w-64"
-							src={`${characterData.thumbnail.path}.${characterData.thumbnail.extension}`}
+							alt="NextUI Album Cover"
+							className="p-2 max-w-80"
+							src={`${characterData[0].thumbnail.path}.${characterData[0].thumbnail.extension}`}
 						/>
 
 						<div className="text-left">
 							<h1 className="text-3xl md:text-6xl mb-5 font-extrabold">
-								{characterData.name}
+								{characterData[0].name}
 							</h1>
 							<p className="w-full">
-								{characterData.description}
+								{characterData[0].description}
 							</p>
 						</div>
 					</div>
-					<OptionsBar />
-
-					{isComicOptionSelected && (
-						<EachSection
-							characterId={characterIdParams.get("id") || ""}
-							sectionName="comics"
-						/>
-					)}
-
-					{isEventOptionSelected && (
-						<EachSection
-							characterId={characterIdParams.get("id") || ""}
-							sectionName="series"
-						/>
-					)}
-
-					{isSeriesOptionSelected && (
-						<EachSection
-							characterId={characterIdParams.get("id") || ""}
-							sectionName="events"
-						/>
-					)}
-
-					{isStoriesOptionSelected && (
-						<EachSection
-							characterId={characterIdParams.get("id") || ""}
-							sectionName="stories"
-						/>
-					)}
-
+					<ComicSection characterId={characterIdParams.get("id")||''} />
 				</div>
+<<<<<<< HEAD
 			)}
+=======
+			) : ''}
+>>>>>>> parent of 408ad2d (create section for character's comics, events, series, stories)
 		</div>
 	);
 }

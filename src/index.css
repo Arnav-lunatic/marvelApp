@@ -15,6 +15,7 @@
   color-scheme: light dark;
   color: var(--text-color);
   background-color: var(--bg-color);
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -22,7 +23,6 @@
 }
 
 ::-webkit-scrollbar {
-  
 	height: 8px;
 	width: 4px;
 	background: #00000081;
