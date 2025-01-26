@@ -53,6 +53,7 @@ export default function CharacterPage() {
 	}, []);
 
 	const fetchCharacterData = () => {
+		let cancel;
 		axios
 			.get(
 				`https://gateway.marvel.com/v1/public/characters/${characterIdParams.get(
@@ -63,6 +64,7 @@ export default function CharacterPage() {
 					headers: {
 						Accept: "*/*",
 					},
+					cancelToken: new axios.CancelToken(c => cancel = c)
 				}
 			)
 			.then((response) => {

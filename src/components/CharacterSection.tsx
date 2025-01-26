@@ -46,12 +46,14 @@ const CharacterSection: React.FC = () => {
 	};
 
 	const fetchCharacterData = () => {
+		let cancel
 		axios
 			.get("https://gateway.marvel.com/v1/public/characters", {
 				params,
 				headers: {
 					Accept: "*/*",
 				},
+				cancelToken: new axios.CancelToken(c => cancel = c)
 			})
 			.then((response) => {
 				setCharacterData(response.data.data.results)
@@ -182,7 +184,7 @@ const CharacterSection: React.FC = () => {
 			/>
 
 			{/* Order By */}
-			<div className="flex items-center justify-between mt-2 text-sm opacity-60 mb-2">
+			<div className="flex items-center justify-between my-2 text-sm opacity-60">
 				<span>Order By-</span>
 				<span
 					className={`rounded-lg px-1 ${
@@ -252,7 +254,7 @@ const CharacterSection: React.FC = () => {
 					})}
 				</div>
 			) : (
-				<Spinner color="danger" size="lg" className="my-16" />
+				<Spinner color="danger" size="lg" className="m-auto w-full" />
 			)}
 		</div>
 	);

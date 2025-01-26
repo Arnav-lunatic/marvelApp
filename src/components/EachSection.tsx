@@ -57,7 +57,12 @@ export default function EachSection({
 			.get(
 				`https://gateway.marvel.com/v1/public/characters/${characterId}/${sectionName}`,
 				{
-					params,
+					params: {
+						ts: ts,
+						apikey: publicApiKey,
+						hash: hash,
+						limit: 8,
+					},
 					headers: {
 						Accept: "*/*",
 					},
