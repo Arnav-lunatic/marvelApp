@@ -182,11 +182,7 @@ const CharacterSection: React.FC = () => {
 			/>
 
 			{/* Order By */}
-<<<<<<< HEAD
 			<div className="flex items-center justify-between my-2 text-sm opacity-60">
-=======
-			<div className="flex items-center justify-between mt-2 text-sm opacity-60">
->>>>>>> parent of 408ad2d (create section for character's comics, events, series, stories)
 				<span>Order By-</span>
 				<span
 					className={`rounded-lg px-1 ${

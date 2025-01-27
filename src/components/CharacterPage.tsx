@@ -58,17 +58,10 @@ export default function CharacterPage() {
 	}, [characterIdParams.get("id")]);
 
 	return (
-<<<<<<< HEAD
 		<div className="w-full overflow-y-auto overflow-x-hidden h-full">
 			{characterData && (
 				<div className="w-full">
 					<div className="flex gap-10 flex-col md:flex-row items-top ">
-=======
-		<div className="w-full">
-			{characterData ? (
-				<div>
-					<div className="flex gap-10 flex-col md:flex-row items-top">
->>>>>>> parent of 408ad2d (create section for character's comics, events, series, stories)
 						<Image
 							isBlurred
 							isZoomed
@@ -88,11 +81,7 @@ export default function CharacterPage() {
 					</div>
 					<ComicSection characterId={characterIdParams.get("id")||''} />
 				</div>
-<<<<<<< HEAD
 			)}
-=======
-			) : ''}
->>>>>>> parent of 408ad2d (create section for character's comics, events, series, stories)
 		</div>
 	);
 }

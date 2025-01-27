@@ -1,12 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import themeReducer from "../features/themeSlice";
 import loaderReducer from "../features/loadingSlice";
-
+import optionsReducer from "../features/optionsSlice"
 
 export const store = configureStore({
 	reducer: {
 		theme: themeReducer,
-		loader: loaderReducer
+		loader: loaderReducer,
+		options: optionsReducer,
 	},
 });
 
