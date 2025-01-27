@@ -173,7 +173,7 @@ const CharacterSection: React.FC = () => {
 	};
 
 	return (
-		<div className=" w-full md:w-96 overflow-auto h-auto md:overflow-y-scroll md:h-[85dvh] bg-black bg-opacity-20 backdrop-blur-lg rounded-lg z-50 p-4">
+		<div className=" w-full md:w-96 overflow-auto h-auto md:overflow-y-scroll md:h-full bg-black bg-opacity-20 backdrop-blur-lg rounded-lg z-50 p-4">
 			<CharacterViewMore />
 
 			<SearchBar

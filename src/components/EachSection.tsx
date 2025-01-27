@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ts, publicApiKey, hash } from "../config/constant";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { setIsLoading } from "../features/loadingSlice";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { Card, CardHeader, CardBody, Image, Skeleton } from "@heroui/react";
 
@@ -31,69 +30,83 @@ export default function EachSection({
 	const dispatch = useAppDispatch();
 	const isLightMode = useAppSelector((state) => state.theme.lightMode);
 
+	const [isSectionLoading, setIsSectionLoading] = useState(true);
 	const [sectionData, setSectionData] = useState<section[]>([]);
-	const [fetchDataLength, setFetchDataLength] = useState(8);
-	const [hasMore, setHasMore] = useState(true);
+	const [offset, setOffset] = useState(0);
+	const [lastElement, setLastElement] = useState<HTMLDivElement | null>(null);
+
+	const observer = useRef(
+		new IntersectionObserver((entries) => {
+			const first = entries[0];
+			if (first.isIntersecting) {
+				setOffset((offset) => offset + 8);
+			}
+		})
+	);
+
+	const fetchCharacterData = useCallback(() => {
+		setIsSectionLoading(true);
+		axios
+			.get(characterId ?
+				`https://gateway.marvel.com/v1/public/characters/${characterId}/${sectionName}`:`https://gateway.marvel.com/v1/public/${sectionName}`,
+				{
+					params: {
+						ts: ts,
+						apikey: publicApiKey,
+						hash: hash,
+						offset: offset,
+						limit: 8,
+					},
+					headers: {
+						Accept: "*/*",
+					},
+				}
+			)
+			.then((response) => {
+				if (sectionData.length > 0) {
+					setSectionData((prevData) => [
+						...prevData,
+						...response.data.data.results,
+					]);
+				} else {
+					setSectionData(response.data.data.results);
+				}
+			})
+			.catch((error) => {
+				navigate("/error");
+				console.error("Error:", error);
+			})
+			.finally(() => {
+				setIsSectionLoading(false);
+			});
+	},[offset, sectionName, characterId])
 
 	useEffect(() => {
-		axios
-			.get(
-				`https://gateway.marvel.com/v1/public/characters/${characterId}/${sectionName}`,
-				{
-					params: {
-						ts: ts,
-						apikey: publicApiKey,
-						hash: hash,
-						limit: 8,
-					},
-					headers: {
-						Accept: "*/*",
-					},
-				}
-			)
-			.then((response) => {
-				setSectionData(response.data.data.results);
-			})
-			.catch((error) => {
-				navigate("/error");
-				console.error("Error:", error);
-			})
-			.finally(() => dispatch(setIsLoading(false)));
-	}, [characterId]);
+		if (offset <= 100) {
+			fetchCharacterData();
+		}
+	}, [offset]);
 
-	const nextFetchCharacterData = () => {
-		axios
-			.get(
-				`https://gateway.marvel.com/v1/public/characters/${characterId}/${sectionName}`,
-				{
-					params: {
-						ts: ts,
-						apikey: publicApiKey,
-						hash: hash,
-						offset: fetchDataLength,
-						limit: 8,
-					},
-					headers: {
-						Accept: "*/*",
-					},
-				}
-			)
-			.then((response) => {
-				setSectionData((prevData) => [
-					...prevData,
-					...response.data.data.results,
-				]);
-				response.data.data.results.length > 0
-					? setHasMore(true)
-					: setHasMore(false);
-				console.log(response.data.data.results.length);
-			})
-			.catch((error) => {
-				navigate("/error");
-				console.error("Error:", error);
-			});
-		setFetchDataLength((fetchDataLength) => fetchDataLength + 8);
-	};
+	useEffect(() => {
+		setOffset(0)
+		setSectionData([])
+	}, [characterId, sectionName])
+	
+
+	useEffect(() => {
+		const currentElement = lastElement;
+		const currentObserver = observer.current;
+
+		if (currentElement) {
+			currentObserver.observe(currentElement);
+		}
+
+		return () => {
+			if (currentElement) {
+				currentObserver.unobserve(currentElement);
+			}
+		};
+	}, [lastElement]);
 
 	const numberOfLoaderElement = [1, 2, 3, 4, 5, 6, 7, 8];
 	const Loader = () => {
@@ -129,50 +142,58 @@ export default function EachSection({
 		);
 	};
 
+	const EachCard = ({ comic }: { comic: section }) => {
+		return (
+			<Card
+				className={`w-68 sm:w-full mx-2 ${isLightMode ? "" : "dark"}`}
+			>
+				<CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+					<h4 className="font-bold text-large">{comic.title}</h4>
+					<p className="text-tiny uppercase font-bold">
+						{comic.modified}
+					</p>
+
+					{comic.prices && (
+						<small className="text-default-500">
+							price: ${comic.prices[0]?.price}
+						</small>
+					)}
+				</CardHeader>
+				<CardBody className="overflow-visible py-2">
+					<Image
+						alt="Card background"
+						className="object-cover rounded-xl"
+						src={`${comic.thumbnail?.path}.${comic.thumbnail?.extension}`}
+						height={420}
+						width={270}
+					/>
+				</CardBody>
+			</Card>
+		);
+	};
+
 	return (
 		<>
-			<div
-			>
-				<div className="grid items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-					{sectionData &&
-						sectionData.map((comic, index) => {
+			<div className="grid items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+				{sectionData &&
+					sectionData.map((comic, index) => {
+						if (sectionData.length === index + 1) {
 							return (
-								<div key={index}>
-									<Card
-										className={`w-68 sm:w-full mx-2 ${
-											isLightMode ? "" : "dark"
-										}`}
-									>
-										<CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-											<h4 className="font-bold text-large">
-												{comic.title}
-											</h4>
-											<p className="text-tiny uppercase font-bold">
-												{comic.modified}
-											</p>
-
-											{comic.prices && (
-												<small className="text-default-500">
-													price: $
-													{comic.prices[0]?.price}
-												</small>
-											)}
-										</CardHeader>
-										<CardBody className="overflow-visible py-2">
-											<Image
-												alt="Card background"
-												className="object-cover rounded-xl"
-												src={`${comic.thumbnail?.path}.${comic.thumbnail?.extension}`}
-												height={420}
-												width={270}
-											/>
-										</CardBody>
-									</Card>
+								<div ref={setLastElement} key={index}>
+									<EachCard comic={comic} />
 								</div>
 							);
-						})}
-				</div>
+						} else {
+							return (
+								<div key={index}>
+									<EachCard comic={comic} />
+								</div>
+							);
+						}
+					})}
 			</div>
+
+			{isSectionLoading && <Loader />}
 		</>
 	);
 }

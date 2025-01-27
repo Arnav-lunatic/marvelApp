@@ -1,30 +1,32 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { ts, publicApiKey, hash } from "../config/constant";
+import { useAppSelector } from "../app/hooks";
+import EachSection from "./EachSection";
+import OptionsBar from "./OptionsBar";
 
 export default function HomePage() {
-
-	const [characterData, setCharacterData] = useState("");
-
-	// useEffect(() => {
-	// 	axios
-	// 		.get("https://gateway.marvel.com/v1/public/comics", {
-	// 			params: {
-	// 				ts: ts,
-	// 				apikey: publicApiKey,
-	// 				hash: hash,
-	// 			},
-	// 			headers: {
-	// 				Accept: "*/*",
-	// 			},
-	// 		})
-	// 		.then((response) => setCharacterData(response.data))
-	// 		.catch((error) => console.error("Error:", error));
-	// }, []);
+	const isComicOptionSelected = useAppSelector(
+		(state) => state.options.isComicsSelected
+	);
+	const isEventOptionSelected = useAppSelector(
+		(state) => state.options.isEventsSelected
+	);
+	const isSeriesOptionSelected = useAppSelector(
+		(state) => state.options.isSeriesSelected
+	);
+	const isStoriesOptionSelected = useAppSelector(
+		(state) => state.options.isStoriesSelected
+	);
 
 	return (
-		<div>
-			<h1 className="text-3xl font-extrabold">Comics</h1>
+		<div className="w-full overflow-y-auto overflow-x-hidden h-full">
+			<OptionsBar />
+
+			{isComicOptionSelected && <EachSection sectionName="comics" />}
+
+			{isEventOptionSelected && <EachSection sectionName="series" />}
+
+			{isSeriesOptionSelected && <EachSection sectionName="events" />}
+
+			{isStoriesOptionSelected && <EachSection sectionName="stories" />}
 		</div>
 	);
 }
