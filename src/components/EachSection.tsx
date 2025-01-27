@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { setIsLoading } from "../features/loadingSlice";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { Card, CardHeader, CardBody, Image, Skeleton } from "@heroui/react";
-import InfiniteScroll from "react-infinite-scroll-component";
 
 interface section {
 	title: string;
@@ -132,11 +131,7 @@ export default function EachSection({
 
 	return (
 		<>
-			<InfiniteScroll
-				dataLength={sectionData.length}
-				next={nextFetchCharacterData}
-				hasMore={true}
-				loader={<Loader />}
+			<div
 			>
 				<div className="grid items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
 					{sectionData &&
@@ -177,7 +172,7 @@ export default function EachSection({
 							);
 						})}
 				</div>
-			</InfiniteScroll>
+			</div>
 		</>
 	);
 }

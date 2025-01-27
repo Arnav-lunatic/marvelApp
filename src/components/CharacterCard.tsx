@@ -8,7 +8,7 @@ interface characProps {
 export default function CharacterCard({ characImg, characName, handleAction }: characProps) {
 
 	return (
-		<Card isFooterBlurred radius="lg" className="border-none">
+		<Card isFooterBlurred radius="lg" className="border-none w-fit m-auto">
 			<Image
 				alt="Character"
 				className="object-cover"
